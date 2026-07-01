@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UrbanFlow — MVP Presentación v2</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Space+Grotesk:wght@400;600;700;900&display=swap');
+
+:root{
+  --lb-navy:#1B2B5E;
+  --lb-orange:#F47920;
+  --ub-cyan:#00C4FF;
+  --ub-green:#00E5A0;
+  --ub-purple:#7C3AED;
+  --danger:#EF4444;
+  --warn:#F59E0B;
+  --bg:#EEF2FF;
+  --surface:#FFFFFF;
+  --text:#0F1B3D;
+  --muted:#526180;
+  --border:rgba(27,43,94,.14);
+  --card:rgba(255,255,255,.92);
+  --shadow:0 18px 70px rgba(27,43,94,.16);
+  --nav:rgba(255,255,255,.92);
+  --grid:rgba(27,43,94,.055);
+}
+body.dark{
+  --bg:#070E1C;
+  --surface:#101827;
+  --text:#EAF2FF;
+  --muted:#94A3B8;
+  --border:rgba(255,255,255,.12);
+  --card:rgba(17,24,39,.92);
+  --shadow:0 18px 70px rgba(0,0,0,.55);
+  --nav:rgba(7,14,28,.93);
+  --grid:rgba(0,196,255,.06);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-snap-type:y mandatory;overflow-y:scroll}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);transition:background .35s,color .35s;overflow-x:hidden}
+
+@keyframes slideUp{from{opacity:0;transform:translateY(36px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes draw{from{stroke-dashoffset:800}to{stroke-dashoffset:0}}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 8px rgba(0,196,255,.12))}50%{filter:drop-shadow(0 0 22px rgba(244,121,32,.28))}}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:9px 24px;background:var(--nav);backdrop-filter:blur(26px);border-bottom:1px solid var(--border)}
+.nav-brand{display:flex;align-items:center;gap:10px;min-width:230px}.nav-logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--lb-navy),#2E4090);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:15px;letter-spacing:-1px}.nav-name{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:.96rem;color:var(--text)}
+.nav-right{display:flex;align-items:center;gap:14px}.dots-wrap{display:flex;gap:5px;flex-wrap:wrap;max-width:240px}.dot{width:9px;height:9px;border-radius:50%;border:0;cursor:pointer;background:var(--muted);opacity:.55;transition:all .25s;padding:0}.dot.on{background:var(--lb-orange);opacity:1;transform:scale(1.55)}
+.theme-wrap{display:flex;align-items:center;gap:6px}.theme-ic{font-size:13px;user-select:none}.tog{width:46px;height:24px;border-radius:12px;border:0;cursor:pointer;background:var(--lb-navy);position:relative;transition:background .3s;outline:none}.tog::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .3s}body.dark .tog{background:var(--lb-orange)}body.dark .tog::after{transform:translateX(22px)}.slide-ctr{font-size:.78rem;font-weight:800;color:var(--muted);min-width:48px;text-align:right}.fs{border:1px solid var(--border);background:var(--card);border-radius:10px;padding:5px 9px;cursor:pointer;color:var(--muted);font-weight:800}
+.progress{position:fixed;top:53px;left:0;height:3px;background:linear-gradient(90deg,var(--lb-orange),var(--ub-cyan),var(--ub-green));z-index:999;width:0%;transition:width .2s ease}
+.lzbar{position:fixed;left:0;top:50%;transform:translateY(-50%);width:5px;height:150px;border-radius:0 3px 3px 0;background:linear-gradient(to bottom,var(--lb-navy),var(--lb-orange));z-index:999}
+
+.slide{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:78px 32px 56px;position:relative;overflow:hidden;background:var(--bg)}
+.slide::before{content:'';position:absolute;inset:0;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(circle at center,black 0%,transparent 78%);pointer-events:none}
+.inner{max-width:1060px;width:100%;position:relative;z-index:2;animation:slideUp .65s ease both}.wide{max-width:1180px}.center{text-align:center}.darkslide{background:linear-gradient(160deg,#071126 0%,#142050 62%,#081024 100%)}.darkslide::before{background-image:linear-gradient(rgba(0,196,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(0,196,255,.07) 1px,transparent 1px)}
+
+.foot{position:absolute;bottom:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:9px 28px;background:var(--nav);backdrop-filter:blur(12px);border-top:1px solid var(--border);font-size:.7rem;color:var(--muted);z-index:3}.fnames{font-weight:700;letter-spacing:.3px}.finst{font-weight:800}.flb{color:var(--lb-orange)}.fnum{font-weight:900;color:var(--lb-navy)}body.dark .fnum{color:var(--ub-cyan)}
+
+.ey{font-size:.76rem;font-weight:900;letter-spacing:2.2px;text-transform:uppercase;color:var(--lb-orange);margin-bottom:12px}h1,h2,h3{font-family:'Space Grotesk',sans-serif;line-height:1.08}h2{font-size:clamp(1.9rem,4.2vw,3.4rem);font-weight:800;color:var(--text)}h3{font-size:clamp(1rem,2.1vw,1.35rem);font-weight:800}p{font-size:clamp(.92rem,1.65vw,1.08rem);line-height:1.65;color:var(--muted)}.acc{color:var(--lb-orange)}.acc2{color:var(--ub-cyan)}.white{color:#fff}.softwhite{color:rgba(255,255,255,.72)}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:var(--shadow);transition:transform .3s,box-shadow .3s,border-color .3s}.card:hover{transform:translateY(-5px);box-shadow:0 24px 80px rgba(27,43,94,.22);border-color:rgba(244,121,32,.35)}.glass{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:22px}.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.stackgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:20px}.pill{display:inline-flex;align-items:center;gap:8px;border-radius:100px;padding:7px 14px;font-size:.78rem;font-weight:800;border:1px solid var(--border);background:var(--card);color:var(--text)}.pill.dark{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.14);color:#fff}.bq{border-left:5px solid var(--lb-orange);padding:18px 24px;background:var(--card);border-radius:0 16px 16px 0;font-size:clamp(.92rem,2vw,1.1rem);font-style:italic;color:var(--text);line-height:1.7;margin:20px 0}
+
+.orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;animation:float 7s ease-in-out infinite}.o1{width:420px;height:420px;background:rgba(0,196,255,.13);top:-110px;right:-90px}.o2{width:320px;height:320px;background:rgba(244,121,32,.11);bottom:-70px;left:-70px}.o3{width:240px;height:240px;background:rgba(124,58,237,.13);top:36%;left:8%;animation-delay:-4s}
+.hero-wrap{width:100%;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:78px 32px 58px;position:relative;overflow:hidden}.hbadge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,196,255,.13);border:1px solid rgba(0,196,255,.28);border-radius:100px;padding:7px 17px;font-size:.76rem;font-weight:900;letter-spacing:1.5px;color:var(--ub-cyan);margin-bottom:22px;animation:pulse 3.5s ease-in-out infinite}.htitle{font-family:'Space Grotesk',sans-serif;font-size:clamp(3.2rem,9vw,7.7rem);font-weight:900;line-height:.94;letter-spacing:-2px;color:#fff;margin-bottom:14px}.htitle span{color:var(--lb-orange)}.hsub{font-size:clamp(.98rem,2.2vw,1.35rem);color:rgba(255,255,255,.74);max-width:720px;margin:0 auto 30px;line-height:1.6}.htags{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:34px}.htag{padding:6px 13px;border-radius:100px;font-size:.76rem;font-weight:800;border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.86);background:rgba(255,255,255,.06)}.hteam{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}.hav{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:100px;padding:7px 15px 7px 9px}.hav-ic{width:30px;height:30px;border-radius:50%;background:var(--lb-orange);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.72rem;color:#fff}.hav-nm{font-size:.82rem;font-weight:700;color:#fff}.scrollhint{position:absolute;bottom:68px;left:50%;transform:translateX(-50%);font-size:.68rem;color:rgba(255,255,255,.45);font-weight:800;letter-spacing:1px;animation:float 2.2s ease-in-out infinite}
+
+.role{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px 16px;text-align:center;position:relative;overflow:hidden}.role::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--lb-orange),var(--ub-cyan))}.role span{font-size:2.5rem;display:block;margin-bottom:9px}.flow{display:flex;align-items:flex-start;gap:0;flex-wrap:wrap}.flowitem{flex:1;min-width:91px;text-align:center;position:relative;padding:18px 6px}.flowitem::before{content:'';position:absolute;top:24px;left:50%;right:-50%;height:2px;background:linear-gradient(to right,var(--lb-orange),var(--ub-cyan));z-index:0}.flowitem:last-child::before{display:none}.bubble{width:38px;height:38px;border-radius:50%;background:var(--lb-navy);border:3px solid var(--lb-orange);display:flex;align-items:center;justify-content:center;font-size:.78rem;margin:0 auto 8px;position:relative;z-index:1;font-weight:900;color:#fff}.flowlabel{font-size:.72rem;font-weight:900;color:var(--muted);line-height:1.25}
+
+.arch{position:relative;display:grid;grid-template-columns:1fr;gap:13px;max-width:820px;margin:24px auto 0}.archrow{display:grid;grid-template-columns:1fr 80px 1fr;align-items:center;gap:14px}.archbox{border-radius:16px;padding:15px 18px;background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow)}.archbox strong{font-size:.95rem}.arrow{font-size:1.6rem;font-weight:900;color:var(--lb-orange);text-align:center}.services{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.service{border-radius:14px;padding:13px;background:rgba(0,196,255,.09);border:1px solid rgba(0,196,255,.22);text-align:center;font-weight:900;font-size:.8rem}.darkslide .archbox{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14);color:#fff}.darkslide .archbox p{color:rgba(255,255,255,.62)}
+
+.mock{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:22px;box-shadow:var(--shadow)}.windowdots{display:flex;align-items:center;gap:7px;margin-bottom:18px}.wd{width:11px;height:11px;border-radius:50%}.formline{font-size:.76rem;font-weight:900;color:var(--muted);margin-bottom:5px}.fakeinput{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 13px;font-size:.82rem;color:var(--muted);margin-bottom:13px}.hmap{width:100%;height:190px;border-radius:18px;background:radial-gradient(circle at 58% 38%,rgba(244,121,32,.68) 0%,rgba(0,196,255,.36) 42%,transparent 70%),radial-gradient(circle at 24% 68%,rgba(124,58,237,.48) 0%,transparent 52%),var(--surface);position:relative;overflow:hidden;border:1px solid var(--border);display:flex;align-items:center;justify-content:center}.pin{position:absolute;font-size:1.45rem;animation:float 3s ease-in-out infinite}.code{padding:14px 22px;background:rgba(255,255,255,.05);border-radius:12px;display:inline-block;font-family:monospace;font-size:.82rem;color:rgba(0,196,255,.9);border:1px solid rgba(0,196,255,.18);word-break:break-all}
+
+.techrow{display:flex;align-items:center;gap:12px;padding:12px 15px;border-radius:13px;background:var(--card);border:1px solid var(--border);transition:transform .2s}.techrow:hover{transform:translateX(5px)}.ti{font-size:1.3rem;width:32px;text-align:center}.tn{font-weight:900;font-size:.9rem}.td{font-size:.77rem;color:var(--muted);margin-left:auto}.metric{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;text-align:center;box-shadow:var(--shadow)}.metric .num{font-size:clamp(1.9rem,4vw,3rem);font-weight:900;line-height:1;color:var(--lb-orange)}.metric .lab{font-size:.78rem;color:var(--muted);margin-top:5px;font-weight:700}.plan{background:var(--card);border:2px solid var(--border);border-radius:20px;padding:20px 16px;text-align:center;position:relative}.plan.hot{border-color:var(--lb-orange);box-shadow:0 0 0 4px rgba(244,121,32,.12)}.badge{position:absolute;top:10px;right:10px;background:var(--lb-orange);color:#fff;font-size:.62rem;font-weight:900;padding:3px 8px;border-radius:100px}.price{font-size:1.6rem;font-weight:900;color:var(--lb-orange)}.chklist{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.chi{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:100px;padding:9px 16px;font-size:.84rem;font-weight:800;color:#fff}.road{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.road div{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:14px;padding:12px;color:#fff;font-weight:800;font-size:.82rem;text-align:center}
+
+@media(max-width:860px){.nav-name{display:none}.dots-wrap{max-width:110px}.g2,.g3,.g4,.g5,.stackgrid,.road{grid-template-columns:1fr}.archrow{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}.services{grid-template-columns:1fr 1fr}.slide{padding:76px 18px 58px}.foot{font-size:.62rem;gap:6px;flex-wrap:wrap}.inner{max-width:100%}.flowitem{min-width:80px}.slide-ctr{display:none}.fs{display:none}}
+@media print{nav,.progress,.lzbar,.scrollhint{display:none}.slide{break-after:page;min-height:100vh}.foot{position:absolute}body{background:#fff}.card,.metric,.mock{box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="lzbar"></div><div class="progress" id="progress"></div>
+<nav>
+  <div class="nav-brand"><div class="nav-logo">UF</div><span class="nav-name">UrbanFlow MVP 2026</span></div>
+  <div class="nav-right"><div class="dots-wrap" id="dots"></div><button class="fs" id="fs" title="Pantalla completa">⛶</button><div class="theme-wrap"><span class="theme-ic">☀️</span><button class="tog" id="tog" aria-label="Cambiar modo claro/oscuro"></button><span class="theme-ic">🌙</span></div><span class="slide-ctr" id="ctr">1 / 15</span></div>
+</nav>
+
+<section class="slide darkslide" id="s1">
+  <div class="hero-wrap"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+    <div class="hbadge">🏙️ TRABAJO INTEGRADOR AS 2026 — INSTITUTO LEIBNITZ</div>
+    <div class="htitle">Urban<span>Flow</span></div>
+    <p class="hsub">MVP funcional para gestión inteligente de incidentes urbanos con geolocalización, inteligencia artificial, trazabilidad y dashboards ejecutivos.</p>
+    <div class="htags"><span class="htag">⚛️ React + Vite</span><span class="htag">🌐 Node + Express</span><span class="htag">🗄️ MongoDB Atlas</span><span class="htag">🤖 Gemini IA</span><span class="htag">🗺️ Leaflet</span><span class="htag">🔐 Clerk</span><span class="htag">☁️ Cloudinary</span></div>
+    <div class="hteam"><div class="hav"><div class="hav-ic">VCE</div><span class="hav-nm">Verónica Celiz</span></div><div class="hav"><div class="hav-ic">NSI</div><span class="hav-nm">Natalia Sigifredo</span></div><div class="hav"><div class="hav-ic">GFE</div><span class="hav-nm">Gabriel Fernandez</span></div></div>
+    <div class="scrollhint">↓ DESLIZÁ / FLECHAS PARA NAVEGAR</div>
+  </div><div class="foot"><span class="fnames">Verónica Celiz · Natalia Sigifredo · Gabriel Fernandez</span><span class="finst"><span class="flb">Instituto</span> Leibnitz — Analista de Sistemas</span><span class="fnum">01 / 15</span></div>
+</section>
+
+<section class="slide">
+  <div class="inner"><div class="ey">🔍 El contexto</div><h2>El problema urbano <span class="acc">real</span></h2><p style="max-width:660px;margin:14px 0 28px">Las ciudades reciben reclamos todos los días, pero muchas veces quedan dispersos, duplicados, sin prioridad y sin seguimiento formal.</p>
+  <div class="g3"><div class="card" style="border-top:4px solid var(--danger)"><span style="font-size:2.3rem">🚧</span><h3 style="color:var(--danger);margin:10px 0 8px">Infraestructura rota</h3><p>Baches, luminarias, basura o pérdidas de agua ingresan por canales informales.</p></div><div class="card" style="border-top:4px solid var(--warn)"><span style="font-size:2.3rem">🗑️</span><h3 style="color:var(--warn);margin:10px 0 8px">Reportes duplicados</h3><p>Varios vecinos reportan el mismo problema sin saber que ya fue registrado.</p></div><div class="card" style="border-top:4px solid var(--ub-purple)"><span style="font-size:2.3rem">📭</span><h3 style="color:var(--ub-purple);margin:10px 0 8px">Sin trazabilidad</h3><p>El ciudadano no sabe qué pasó, el operador no prioriza y el municipio pierde evidencia.</p></div></div>
+  <div class="bq">UrbanFlow transforma reclamos urbanos dispersos en gestión inteligente, trazable y medible.</div></div>
+  <div class="foot"><span class="fnames">Problema</span><span class="finst">Reclamos dispersos → gestión desordenada</span><span class="fnum">02 / 15</span></div>
+</section>
+
+<section class="slide darkslide">
+  <div class="inner center"><div class="ey" style="color:var(--ub-cyan)">💡 La solución</div><h2 class="white" style="font-size:clamp(2.2rem,5.3vw,4.6rem)">Una plataforma que <span style="color:var(--lb-orange)">transforma</span><br>reclamos en gestión inteligente</h2><p class="softwhite" style="max-width:780px;margin:18px auto 30px">UrbanFlow no es solo una pantalla de reclamos: es un MVP funcional con frontend, backend, base de datos, autenticación, IA, mapas, workflow, riesgos documentados y visión comercial.</p>
+    <div class="g3"><div class="glass"><span style="font-size:2.5rem">⚛️</span><h3 class="white" style="margin:10px 0">Frontend Web</h3><p class="softwhite">Experiencia responsive para ciudadano, operador, admin y superadmin.</p></div><div class="glass" style="background:rgba(0,196,255,.13);border-color:rgba(0,196,255,.28)"><span style="font-size:2.5rem">⚙️</span><h3 class="white" style="margin:10px 0">API REST</h3><p class="softwhite">Lógica de negocio con Node.js, Express, MongoDB Atlas y control por roles.</p></div><div class="glass" style="background:rgba(244,121,32,.13);border-color:rgba(244,121,32,.28)"><span style="font-size:2.5rem">🤖</span><h3 class="white" style="margin:10px 0">IA + Smart City</h3><p class="softwhite">Clasificación, prioridad, duplicados, geolocalización y tableros.</p></div></div>
+  </div><div class="foot"><span class="fnames">Solución</span><span class="finst">MVP funcional con arquitectura real</span><span class="fnum">03 / 15</span></div>
+</section>
+
+<section class="slide darkslide">
+  <div class="inner wide"><div class="ey" style="color:var(--ub-cyan)">🏗️ Arquitectura general</div><h2 class="white">Diseño multicapa <span style="color:var(--lb-orange)">desacoplado</span></h2><p class="softwhite" style="max-width:760px;margin:12px 0 22px">UrbanFlow separa interfaz, API, persistencia y servicios externos. Esto permite escalar, mantener y probar cada componente de forma ordenada.</p>
+    <div class="arch">
+      <div class="archrow"><div class="archbox"><strong>👤 Ciudadano / Operador / Admin / SuperAdmin</strong><p>Usuarios con permisos y navegación según rol.</p></div><div class="arrow">↓</div><div class="archbox"><strong>🔐 Clerk Authentication</strong><p>Login, sesiones, metadata, municipio y roles.</p></div></div>
+      <div class="archrow"><div class="archbox"><strong>⚛️ Frontend React + Vite</strong><p>SPA responsive, formularios, dashboards y mapas.</p></div><div class="arrow">↓</div><div class="archbox"><strong>🌐 API REST Node + Express</strong><p>Controladores, rutas, middleware y reglas de negocio.</p></div></div>
+      <div class="archrow"><div class="archbox"><strong>🗄️ MongoDB Atlas + Mongoose</strong><p>Usuarios, reportes, estados, historial, IA y métricas.</p></div><div class="arrow">↔</div><div class="archbox"><strong>☁️ Servicios externos</strong><p>Cloudinary, Gemini, OpenStreetMap/Leaflet, Power BI.</p></div></div>
+    </div>
+    <div class="services" style="margin-top:16px"><div class="service">☁️ Cloudinary</div><div class="service">🤖 Gemini IA</div><div class="service">🗺️ Leaflet</div><div class="service">📊 BI</div></div>
+  </div><div class="foot"><span class="fnames">Arquitectura</span><span class="finst">Frontend → API → Base de datos → Servicios externos</span><span class="fnum">04 / 15</span></div>
+</section>
+
+<section class="slide">
+  <div class="inner"><div class="ey">👥 Arquitectura de roles</div><h2>Actores del <span class="acc">sistema</span></h2><p style="margin:12px 0 26px;max-width:650px">Cada rol tiene permisos específicos para garantizar organización, seguridad y eficiencia operativa.</p>
+    <div class="g4"><div class="role"><span>👤</span><h3 style="color:var(--lb-orange)">Ciudadano</h3><p>Reporta incidentes, sube fotos y consulta estados.</p></div><div class="role"><span>🛠️</span><h3 style="color:var(--ub-cyan)">Operador</h3><p>Toma incidentes y los gestiona hasta su resolución.</p></div><div class="role"><span>🏛️</span><h3 style="color:var(--ub-green)">Admin Municipal</h3><p>Supervisa operadores e incidentes de su jurisdicción.</p></div><div class="role"><span>👑</span><h3 style="color:var(--ub-purple)">SuperAdmin</h3><p>Control global del ecosistema y clientes.</p></div></div>
+    <div style="margin-top:24px;text-align:center"><span class="pill">Reporta</span> <span style="color:var(--lb-orange);font-weight:900">→</span> <span class="pill">Gestiona</span> <span style="color:var(--ub-cyan);font-weight:900">→</span> <span class="pill">Supervisa</span> <span style="color:var(--ub-green);font-weight:900">→</span> <span class="pill">Controla</span></div>
+  </div><div class="foot"><span class="fnames">Roles</span><span class="finst">Ciudadano · Operador · Admin · SuperAdmin</span><span class="fnum">05 / 15</span></div>
+</section>
+
+<section class="slide">
+  <div class="inner wide"><div class="ey">🔄 Trazabilidad total</div><h2>Flujo completo del <span class="acc">incidente</span></h2><p style="margin:12px 0 26px;max-width:740px">Cada incidente deja de ser un reclamo aislado y pasa a formar parte de un circuito controlado, auditable y medible.</p>
+    <div class="flow"><div class="flowitem"><div class="bubble">📥</div><div class="flowlabel">Reportado</div></div><div class="flowitem"><div class="bubble">✔️</div><div class="flowlabel">Validado</div></div><div class="flowitem"><div class="bubble">👍</div><div class="flowlabel">Aceptado</div></div><div class="flowitem"><div class="bubble">📋</div><div class="flowlabel">Asignado</div></div><div class="flowitem"><div class="bubble">⚙️</div><div class="flowlabel">En proceso</div></div><div class="flowitem"><div class="bubble">✅</div><div class="flowlabel">Resuelto</div></div><div class="flowitem"><div class="bubble">🔍</div><div class="flowlabel">Verificado</div></div><div class="flowitem"><div class="bubble">🔒</div><div class="flowlabel">Cerrado</div></div></div>
+    <div class="g3" style="margin-top:26px"><div class="card"><h3>📍 Geolocalizado</h3><p>Posición exacta y municipio asociado.</p></div><div class="card"><h3>📸 Con evidencia</h3><p>Fotos trazables asociadas al reporte.</p></div><div class="card"><h3>🤖 Asistido por IA</h3><p>Categoría, prioridad y posibles duplicados.</p></div></div>
+  </div><div class="foot"><span class="fnames">Workflow</span><span class="finst">De reporte ciudadano a cierre verificado</span><span class="fnum">06 / 15</span></div>
+</section>
+
+<section class="slide">
+  <div class="inner"><div class="g2" style="align-items:center"><div><div class="ey">📱 Experiencia ciudadana</div><h2>El ciudadano <span class="acc">reporta</span></h2><p style="margin:14px 0 22px">El ciudadano no necesita conocer la estructura municipal: describe el problema, ubica el punto, adjunta evidencia y el sistema inicia el circuito operativo.</p><div style="display:flex;flex-direction:column;gap:9px"><div class="pill">📝 Descripción del problema</div><div class="pill">📍 Ubicación georreferenciada</div><div class="pill">📸 Evidencia fotográfica</div><div class="pill">🔔 Seguimiento del estado</div></div></div>
+  <div class="mock"><div class="windowdots"><span class="wd" style="background:#ef4444"></span><span class="wd" style="background:#f59e0b"></span><span class="wd" style="background:#10b981"></span><span style="margin-left:auto;font-size:.72rem;color:var(--muted);font-weight:900">Nuevo Reporte</span></div><div class="formline">Descripción</div><div class="fakeinput">Bache profundo en Av. Colón. Riesgo para motos y peatones...</div><div class="g2" style="gap:9px"><div><div class="formline">Categoría IA</div><div class="fakeinput" style="color:var(--lb-orange);font-weight:900">🚧 Infraestructura</div></div><div><div class="formline">Prioridad</div><div class="fakeinput" style="color:var(--danger);font-weight:900">🔴 Alta</div></div></div><div class="fakeinput" style="border-style:dashed;text-align:center;color:var(--ub-cyan);font-weight:900">📍 Ubicación detectada: Villa María, Córdoba</div><div style="background:var(--lb-orange);border-radius:10px;padding:12px;text-align:center;color:#fff;font-weight:900">Enviar reporte</div></div></div>
+  </div><div class="foot"><span class="fnames">Ciudadano</span><span class="finst">Carga simple, evidencia y seguimiento</span><span class="fnum">07 / 15</span></div>
+</section>
+
+<section class="slide darkslide">
+  <div class="inner center"><div class="ey" style="color:var(--ub-cyan)">☁️ Evidencia multimedia</div><h2 class="white">Cloudinary convierte fotos en <span style="color:var(--lb-orange)">evidencia trazable</span></h2><p class="softwhite" style="max-width:760px;margin:14px auto 28px">Las imágenes no quedan sueltas en carpetas locales: se almacenan, optimizan y vinculan al incidente mediante URLs persistentes.</p>
+    <div class="g4"><div class="glass"><span style="font-size:2.2rem">📸</span><h3 class="white">Upload</h3><p class="softwhite">Subida desde el formulario web.</p></div><div class="glass"><span style="font-size:2.2rem">🔗</span><h3 class="white">URL vinculada</h3><p class="softwhite">Cada imagen queda asociada al reporte.</p></div><div class="glass"><span style="font-size:2.2rem">🌐</span><h3 class="white">CDN</h3><p class="softwhite">Acceso rápido desde cualquier dispositivo.</p></div><div class="glass"><span style="font-size:2.2rem">✅</span><h3 class="white">Auditoría</h3><p class="softwhite">Evidencia para verificación y cierre.</p></div></div>
+    <div class="code" style="margin-top:24px">https://res.cloudinary.com/urbanflow/image/upload/incidentes/evidencia.jpg</div>
+  </div><div class="foot"><span class="fnames">Cloudinary</span><span class="finst">Evidencia visual segura y accesible</span><span class="fnum">08 / 15</span></div>
+</section>
+
+<section class="slide">
+  <div class="inner"><div class="g2" style="align-items:center"><div><div class="ey">🗺️ Smart City territorial</div><h2>Geolocalización del <span class="acc">incidente</span></h2><p style="margin:14px 0 22px">La geolocalización transforma un reclamo textual en un dato territorial útil para operadores, administradores y análisis estratégico.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><span class="pill">Leaflet Maps</span><span class="pill">OpenStreetMap</span><span class="pill">React Leaflet</span><span class="pill">Heatmap</span></div></div>
+    <div><div class="hmap"><span class="pin" style="top:22%;left:52%">📍</span><span class="pin" style="top:42%;left:32%;animation-delay:1s">📍</span><span class="pin" style="top:58%;left:62%;animation-delay:2s;color:red">🚨</span><span class="pin" style="top:28%;left:18%;animation-delay:.5s">📍</span><span class="pin" style="top:68%;left:42%;animation-delay:1.5s">📍</span><div style="position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,.55);border-radius:7px;padding:5px 9px;font-size:.68rem;color:#fff;font-weight:800">🔴 Zona crítica detectada</div><div style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,.55);border-radius:7px;padding:5px 9px;font-size:.68rem;color:#fff">Leaflet + Heatmap</div></div><div class="g2" style="margin-top:10px"><div class="metric"><div class="num">136</div><div class="lab">Incidentes de testing</div></div><div class="metric"><div class="num" style="color:var(--ub-cyan)">5</div><div class="lab">Clientes demo</div></div></div></div></div>
+  </div><div class="foot"><span class="fnames">Geolocalización</span><span class="finst">Del reclamo textual al dato territorial</span><span class="fnum">09 / 15</span></div>
+</section>
+
+<section class="slide darkslide">
+  <div class="inner"><div class="ey" style="color:var(--ub-cyan)">🤖 Inteligencia artificial</div><h2 class="white">Gemini <span style="color:var(--lb-orange)">clasifica</span> y prioriza</h2><p class="softwhite" style="max-width:720px;margin:12px 0 26px">La IA no reemplaza al operador: lo asiste clasificando incidentes, estimando prioridad y sugiriendo acciones.</p>
+    <div class="g2"><div class="glass"><div style="font-size:.74rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.5);margin-bottom:14px">📨 Input del ciudadano</div><div style="background:rgba(255,255,255,.05);border-left:3px solid rgba(0,196,255,.45);border-radius:10px;padding:14px;color:rgba(255,255,255,.86);line-height:1.65">“Hay un bache muy grande en la esquina, se inundó con la lluvia y hay peligro de caída.”</div></div>
+    <div class="glass" style="background:rgba(0,196,255,.11);border-color:rgba(0,196,255,.28)"><div style="font-size:.74rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:var(--ub-cyan);margin-bottom:14px">🤖 Respuesta IA</div><div style="display:flex;flex-direction:column;gap:8px"><div class="pill dark" style="justify-content:space-between"><span>Categoría</span><strong style="color:var(--lb-orange)">🚧 Infraestructura vial</strong></div><div class="pill dark" style="justify-content:space-between"><span>Prioridad</span><strong style="color:#ef4444">🔴 Alta</strong></div><div class="pill dark" style="justify-content:space-between"><span>Riesgo</span><strong style="color:#f59e0b">⚠️ Accidente</strong></div><div style="background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.28);border-radius:10px;padding:10px;color:rgba(255,255,255,.78)"><strong style="color:var(--ub-green)">Acción sugerida:</strong> señalizar y coordinar brigada de reparación.</div></div></div></div>
+  </div><div class="foot"><span class="fnames">IA Gemini</span><span class="finst">Clasificación · prioridad · acción sugerida</span><span class="fnum">10 / 15</span></div>
+</section>
+
+<section class="slide">
+  <div class="inner center"><div class="ey">🧠 Embeddings vectoriales</div><h2>Detección de <span class="acc">duplicados</span></h2><p style="max-width:740px;margin:12px auto 26px">UrbanFlow detecta reportes similares por combinación de semántica y cercanía geográfica, reduciendo trabajo duplicado.</p>
+    <div style="display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap"><div class="card" style="max-width:220px;border:2px dashed var(--border)"><span style="font-size:1.8rem">👤</span><h3 style="font-size:.92rem;margin:8px 0">Vecino A</h3><p style="font-size:.78rem">“Agua acumulada en Belgrano y Mitre.”</p></div><div style="font-size:2rem;color:var(--lb-orange);font-weight:900">→</div><div style="background:linear-gradient(135deg,var(--lb-navy),#2E4090);border-radius:22px;padding:20px 26px;text-align:center;border:2px solid var(--lb-orange);animation:glow 4s ease infinite"><span style="font-size:2rem">🤖</span><h3 class="white" style="font-size:.95rem;margin:8px 0">Motor de similitud</h3><p class="softwhite" style="font-size:.76rem">Similitud semántica + distancia geográfica</p><div style="margin-top:10px;padding:6px 12px;background:rgba(0,229,160,.18);border-radius:100px;font-size:.74rem;font-weight:900;color:var(--ub-green)">✅ DUPLICADO DETECTADO</div></div><div style="font-size:2rem;color:var(--lb-orange);font-weight:900">←</div><div class="card" style="max-width:220px;border:2px dashed var(--border)"><span style="font-size:1.8rem">👤</span><h3 style="font-size:.92rem;margin:8px 0">Vecino B</h3><p style="font-size:.78rem">“Inundación en la misma intersección.”</p></div></div>
+    <div class="bq" style="max-width:720px;margin:26px auto 0;text-align:left">Resultado: varios reportes ciudadanos se agrupan en un solo incidente principal para facilitar la gestión operativa.</div>
+  </div><div class="foot"><span class="fnames">Duplicados</span><span class="finst">Menos reproceso · más eficiencia operativa</span><span class="fnum">11 / 15</span></div>
+</section>
+
+<section class="slide darkslide">
+  <div class="inner wide"><div class="ey" style="color:var(--ub-cyan)">🛠️ Operación municipal</div><h2 class="white">Operador, Admin y SuperAdmin <span style="color:var(--lb-orange)">trabajan conectados</span></h2><p class="softwhite" style="max-width:760px;margin:12px 0 24px">La gestión no termina en el reporte: el sistema ordena la operación, supervisa equipos y permite mirar la plataforma completa.</p>
+    <div class="g3"><div class="glass"><span style="font-size:2rem">🛠️</span><h3 class="white" style="margin:8px 0">Operador</h3><p class="softwhite">Toma incidentes, cambia estados, resuelve y deja evidencia.</p><div style="margin-top:12px;display:flex;flex-direction:column;gap:7px"><div class="pill dark">📋 Pendientes</div><div class="pill dark">✋ Tomar incidente</div><div class="pill dark">✅ Resolver</div></div></div><div class="glass" style="background:rgba(0,196,255,.11);border-color:rgba(0,196,255,.26)"><span style="font-size:2rem">🏛️</span><h3 class="white" style="margin:8px 0">Admin Municipal</h3><p class="softwhite">Supervisa operadores e incidentes por jurisdicción.</p><div style="margin-top:12px;display:flex;flex-direction:column;gap:7px"><div class="pill dark">👥 Operadores</div><div class="pill dark">📊 Estados</div><div class="pill dark">📍 Municipio</div></div></div><div class="glass" style="background:rgba(244,121,32,.11);border-color:rgba(244,121,32,.28)"><span style="font-size:2rem">👑</span><h3 class="white" style="margin:8px 0">SuperAdmin</h3><p class="softwhite">Control global de clientes, métricas, mapas y evolución SaaS.</p><div style="margin-top:12px;display:flex;flex-direction:column;gap:7px"><div class="pill dark">🌐 Ecosistema</div><div class="pill dark">🔥 Heatmap IA</div><div class="pill dark">📈 KPIs</div></div></div></div>
+    <div class="g5" style="margin-top:18px"><div class="metric"><div class="num">5</div><div class="lab">Clientes demo</div></div><div class="metric"><div class="num" style="color:var(--ub-cyan)">50</div><div class="lab">Ciudadanos seed</div></div><div class="metric"><div class="num" style="color:var(--ub-green)">136</div><div class="lab">Incidentes</div></div><div class="metric"><div class="num" style="color:var(--ub-purple)">4</div><div class="lab">Roles</div></div><div class="metric"><div class="num" style="color:var(--warn)">v1.0</div><div class="lab">Baseline testing</div></div></div>
+  </div><div class="foot"><span class="fnames">Operación</span><span class="finst">Cola operativa · supervisión municipal · visión global</span><span class="fnum">12 / 15</span></div>
+</section>
+
+<section class="slide">
+  <div class="inner wide"><div class="ey">⚙️ Ingeniería del MVP</div><h2>Stack tecnológico + <span class="acc">GitHub Flow</span></h2><p style="max-width:760px;margin:12px 0 20px">El MVP se construyó con arquitectura web moderna, servicios cloud, IA y trabajo colaborativo por ramas, Pull Requests y releases.</p>
+    <div class="stackgrid"><div class="techrow"><span class="ti">⚛️</span><span class="tn">React + Vite + TypeScript</span><span class="td">Frontend SPA</span></div><div class="techrow"><span class="ti">🎨</span><span class="tn">Tailwind CSS</span><span class="td">UI responsive</span></div><div class="techrow"><span class="ti">🌐</span><span class="tn">Node.js + Express</span><span class="td">API REST</span></div><div class="techrow"><span class="ti">🗄️</span><span class="tn">MongoDB Atlas + Mongoose</span><span class="td">Persistencia</span></div><div class="techrow"><span class="ti">🔐</span><span class="tn">Clerk + JWT</span><span class="td">Auth + roles</span></div><div class="techrow"><span class="ti">☁️</span><span class="tn">Cloudinary</span><span class="td">Fotos</span></div><div class="techrow"><span class="ti">🗺️</span><span class="tn">Leaflet + OpenStreetMap</span><span class="td">Mapas</span></div><div class="techrow"><span class="ti">🤖</span><span class="tn">Gemini + Embeddings</span><span class="td">IA</span></div><div class="techrow"><span class="ti">📊</span><span class="tn">Recharts + Power BI</span><span class="td">Dashboards</span></div><div class="techrow"><span class="ti">🔀</span><span class="tn">Git + GitHub + Releases</span><span class="td">Control</span></div></div>
+    <div class="bq">Evidencia técnica: repositorios separados de Frontend y Backend, ramas de desarrollo, Pull Requests, merges a main y baseline v1.0-testing.</div>
+  </div><div class="foot"><span class="fnames">Ingeniería</span><span class="finst">Arquitectura real · control de versiones · evidencia técnica</span><span class="fnum">13 / 15</span></div>
+</section>
+
+<section class="slide">
+  <div class="inner wide"><div class="ey">⚠️ Gestión + negocio</div><h2>AMFE, riesgos y <span class="acc">modelo SaaS</span></h2><p style="max-width:760px;margin:12px 0 22px">El proyecto fue gestionado, no improvisado: se documentaron riesgos, mitigaciones y una estrategia comercial escalable.</p>
+    <div class="g4" style="margin-bottom:18px"><div class="metric"><div class="num">240</div><div class="lab">Riesgos identificados</div></div><div class="metric"><div class="num" style="color:var(--ub-cyan)">AMFE</div><div class="lab">Metodología aplicada</div></div><div class="metric"><div class="num" style="color:var(--ub-green)">100%</div><div class="lab">Mitigación definida</div></div><div class="metric"><div class="num" style="color:var(--ub-purple)">Top 10</div><div class="lab">Críticos monitoreados</div></div></div>
+    <div class="g2"><div class="card"><h3 style="color:var(--lb-orange);margin-bottom:10px">⚠️ Riesgos críticos</h3><p>Integración de ramas, dependencia de servicios cloud, clasificación IA, seguridad, geolocalización y despliegues simultáneos.</p><div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><span class="pill">Notion</span><span class="pill">Google Sheets</span><span class="pill">AMFE</span><span class="pill">GitHub</span></div></div><div class="card"><h3 style="color:var(--ub-cyan);margin-bottom:10px">💼 Planes SaaS</h3><div class="g2" style="gap:8px"><div class="plan"><h3>🆓 Demo</h3><div class="price">$0</div><p>500 incidentes</p></div><div class="plan"><h3>🏛️ Base</h3><div class="price">USD 99+</div><p>Municipio chico</p></div><div class="plan hot"><span class="badge">IA</span><h3>🌆 Pro</h3><div class="price">USD 249+</div><p>IA + métricas</p></div><div class="plan"><h3>🚀 Plus</h3><div class="price">USD 599+</div><p>BI avanzado</p></div></div></div></div>
+  </div><div class="foot"><span class="fnames">Gestión</span><span class="finst">Riesgos documentados + visión comercial SaaS</span><span class="fnum">14 / 15</span></div>
+</section>
+
+<section class="slide darkslide">
+  <div class="orb o1" style="opacity:.4"></div><div class="orb o2" style="opacity:.4"></div><div class="inner wide"><div class="g2" style="align-items:center"><div><div class="ey" style="color:var(--ub-cyan)">🏁 Cierre</div><h2 class="white">MVP logrado + <span style="color:var(--lb-orange)">Etapa 2</span></h2><p class="softwhite" style="margin:14px 0 22px">UrbanFlow no es una maqueta académica. Es un MVP funcional preparado para evolucionar hacia una plataforma Smart City real.</p><div class="chklist"><div class="chi">✅ Frontend React</div><div class="chi">✅ Backend API REST</div><div class="chi">✅ MongoDB Atlas</div><div class="chi">✅ Clerk Auth</div><div class="chi">✅ Cloudinary</div><div class="chi">✅ IA Gemini</div><div class="chi">✅ Geolocalización</div><div class="chi">✅ Workflow</div><div class="chi">✅ 4 Roles</div><div class="chi">✅ AMFE 240 riesgos</div><div class="chi">✅ Modelo SaaS</div></div></div>
+  <div><div class="glass" style="border-color:rgba(244,121,32,.3);background:rgba(244,121,32,.12)"><h3 class="white" style="margin-bottom:12px">🚀 Etapa 2</h3><div class="road"><div>Testing funcional ampliado</div><div>Deploy productivo</div><div>BI avanzado</div><div>Más municipios piloto</div><div>Predicción IA</div><div>Análisis financiero Oct. 2026</div></div></div><div style="padding:22px;margin-top:18px;background:rgba(255,255,255,.07);border:2px solid rgba(244,121,32,.28);border-radius:20px"><p style="font-size:1.14rem;font-weight:900;color:#fff;line-height:1.55">“Construimos un MVP funcional con arquitectura real, roles reales, APIs reales, IA integrada, trazabilidad, riesgos documentados y visión comercial.”</p></div></div></div>
+  </div><div class="foot"><span class="fnames">Verónica · Natalia · Gabriel</span><span class="finst">UrbanFlow — MVP funcional Smart City</span><span class="fnum">15 / 15</span></div>
+</section>
+
+<script>
+(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const ctr=document.getElementById('ctr');
+  const dotsEl=document.getElementById('dots');
+  const togBtn=document.getElementById('tog');
+  const body=document.body;
+  const progress=document.getElementById('progress');
+  const fsBtn=document.getElementById('fs');
+  const N=slides.length;
+
+  slides.forEach((_,i)=>{const d=document.createElement('button');d.className='dot'+(i===0?' on':'');d.setAttribute('aria-label','Ir a slide '+(i+1));d.addEventListener('click',()=>slides[i].scrollIntoView({behavior:'smooth'}));dotsEl.appendChild(d);});
+  const dots=[...document.querySelectorAll('.dot')];
+
+  function setActive(idx){ctr.textContent=(idx+1)+' / '+N;dots.forEach((d,i)=>d.classList.toggle('on',i===idx));progress.style.width=((idx+1)/N*100)+'%';}
+  const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.intersectionRatio>=0.55){setActive(slides.indexOf(e.target));}});},{threshold:.55});
+  slides.forEach(s=>io.observe(s));
+
+  const aio=new IntersectionObserver(entries=>{entries.forEach(e=>{const inner=e.target.querySelector('.inner');if(inner&&e.isIntersecting){inner.style.animation='none';void inner.offsetWidth;inner.style.animation='slideUp .65s ease both';}});},{threshold:.2});
+  slides.forEach(s=>aio.observe(s));
+
+  if(localStorage.getItem('uf-theme-v2')==='dark') body.classList.add('dark');
+  togBtn.addEventListener('click',()=>{body.classList.toggle('dark');localStorage.setItem('uf-theme-v2',body.classList.contains('dark')?'dark':'light');});
+  fsBtn.addEventListener('click',()=>{if(!document.fullscreenElement){document.documentElement.requestFullscreen?.();}else{document.exitFullscreen?.();}});
+
+  function currentIndex(){const rects=slides.map(s=>s.getBoundingClientRect());let idx=rects.findIndex(r=>r.top>=-120&&r.top<window.innerHeight/2);if(idx<0){idx=rects.reduce((best,r,i)=>Math.abs(r.top)<Math.abs(rects[best].top)?i:best,0);}return idx;}
+  document.addEventListener('keydown',e=>{const cur=currentIndex();if(['ArrowDown','PageDown',' '].includes(e.key)&&cur<N-1){e.preventDefault();slides[cur+1].scrollIntoView({behavior:'smooth'});}if(['ArrowUp','PageUp'].includes(e.key)&&cur>0){e.preventDefault();slides[cur-1].scrollIntoView({behavior:'smooth'});}if(e.key==='Home'){e.preventDefault();slides[0].scrollIntoView({behavior:'smooth'});}if(e.key==='End'){e.preventDefault();slides[N-1].scrollIntoView({behavior:'smooth'});}});
+})();
+</script>
+</body>
+</html>
